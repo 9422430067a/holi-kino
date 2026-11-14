@@ -8,4 +8,14 @@ public record ScreeningDto(
         int durationMinutes,
         Instant startsAt
 ) {
+
+    public static ScreeningDto from(Screening screening) {
+        Movie movie = screening.getMovie();
+        return new ScreeningDto(
+                screening.getId(),
+                movie.getTitle(),
+                movie.getDurationMinutes(),
+                screening.getStartsAt()
+        );
+    }
 }
