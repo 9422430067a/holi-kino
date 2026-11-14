@@ -1,0 +1,10 @@
+# IDE
+.idea/
+*.iml
+
+# macOS
+.DS_Store
+
+# Frontend (kommt später)
+node_modules/
+dist/
