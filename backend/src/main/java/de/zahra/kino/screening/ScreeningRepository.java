@@ -16,4 +16,6 @@ public interface ScreeningRepository extends JpaRepository<Screening, Long> {
             ORDER BY s.startsAt
             """)
     List<Screening> findUpcomingWithMovie(@Param("now") Instant now);
+
+    boolean existsByIdAndStartsAtAfter(Long id, Instant startsAt);
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface SeatReservationRepository extends JpaRepository<SeatReservation, Long> {
@@ -30,4 +31,7 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
                 @Param("token") UUID token,
                 @Param("reservedUntil") Instant reservedUntil,
                 @Param("now") Instant now);
+
+    Optional<SeatReservation> findByReservationTokenAndStatusAndReservedUntilAfter(
+            UUID reservationToken, SeatStatus status, Instant now);
 }
