@@ -29,7 +29,7 @@ public class SeatReservation {
     @Column(name = "reservation_token", nullable = false)
     private UUID reservationToken;
 
-    @Column(name = "reserved_until", nullable = false)
+    @Column(name = "reserved_until")
     private Instant reservedUntil;
 
     @Column(name = "booking_id")
