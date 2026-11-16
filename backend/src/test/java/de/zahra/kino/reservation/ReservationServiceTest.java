@@ -126,4 +126,15 @@ class ReservationServiceTest {
         assertThat(tokenInDatabase(3, 5)).isEqualTo(otherGuest.token());
         assertThat(rowsWithToken(mine.token())).isEqualTo(1);
     }
+
+    @Test
+    void reservationIsExpiredExactlyAtReservedUntil() {
+        ReservationDto guestA = reservationService.reserve(screeningId, 3, 4, null);
+
+        // Exactly at the deadline the reservation is over.
+        clock.setInstant(guestA.reservedUntil());
+        ReservationDto guestB = reservationService.reserve(screeningId, 3, 4, null);
+
+        assertThat(tokenInDatabase(3, 4)).isEqualTo(guestB.token());
+    }
 }

@@ -23,7 +23,7 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
                 reservation_token = EXCLUDED.reservation_token,
                 reserved_until = EXCLUDED.reserved_until
             WHERE seat_reservation.status = 'RESERVED'
-              AND seat_reservation.reserved_until < :now
+              AND seat_reservation.reserved_until <= :now
             """, nativeQuery = true)
     int reserve(@Param("screeningId") Long screeningId,
                 @Param("seatRow") int seatRow,
