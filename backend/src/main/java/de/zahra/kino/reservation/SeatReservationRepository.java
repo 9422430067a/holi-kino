@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,4 +35,14 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
 
     Optional<SeatReservation> findByReservationTokenAndStatusAndReservedUntilAfter(
             UUID reservationToken, SeatStatus status, Instant now);
+
+    @Query("""
+            SELECT r FROM SeatReservation r
+            WHERE r.screeningId = :screeningId
+              AND (r.status = de.zahra.kino.reservation.SeatStatus.BOOKED
+                   OR (r.status = de.zahra.kino.reservation.SeatStatus.RESERVED
+                       AND r.reservedUntil > :now))
+            """)
+    List<SeatReservation> findOccupiedSeats(@Param("screeningId") Long screeningId,
+                                            @Param("now") Instant now);
 }
