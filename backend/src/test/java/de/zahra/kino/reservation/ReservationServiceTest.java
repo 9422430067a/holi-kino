@@ -1,15 +1,14 @@
 package de.zahra.kino.reservation;
 
 import de.zahra.kino.MutableClock;
+import de.zahra.kino.MutableClockConfiguration;
+import de.zahra.kino.TestData;
 import de.zahra.kino.TestcontainersConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.Duration;
@@ -19,30 +18,22 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
+import static de.zahra.kino.MutableClockConfiguration.START;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-@Import(TestcontainersConfiguration.class)
+@Import({TestcontainersConfiguration.class, MutableClockConfiguration.class, TestData.class})
 class ReservationServiceTest {
-
-    private static final Instant START = Instant.parse("2036-01-01T12:00:00Z");
-
-    @TestConfiguration
-    static class MutableClockConfiguration {
-
-        @Bean
-        @Primary
-        MutableClock mutableClock() {
-            return new MutableClock(START);
-        }
-    }
 
     @Autowired
     private ReservationService reservationService;
 
     @Autowired
     private MutableClock clock;
+
+    @Autowired
+    private TestData testData;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -52,7 +43,7 @@ class ReservationServiceTest {
     @BeforeEach
     void setUp() {
         clock.setInstant(START);
-        screeningId = createScreening(START.plus(1, ChronoUnit.DAYS));
+        screeningId = testData.createScreening(START.plus(1, ChronoUnit.DAYS));
     }
 
     @Test
