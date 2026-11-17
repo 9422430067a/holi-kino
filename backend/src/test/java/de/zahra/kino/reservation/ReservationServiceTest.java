@@ -12,9 +12,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.Duration;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
@@ -62,13 +59,6 @@ class ReservationServiceTest {
         assertThat(guestB.token()).isNotEqualTo(guestA.token());
         assertThat(guestB.reservedUntil()).isEqualTo(clock.instant().plus(Duration.ofMinutes(5)));
         assertThat(tokenInDatabase(3, 4)).isEqualTo(guestB.token());
-    }
-
-    private Long createScreening(Instant startsAt) {
-        return jdbcTemplate.queryForObject(
-                "INSERT INTO screening (movie_id, starts_at) "
-                        + "VALUES ((SELECT id FROM movie ORDER BY id LIMIT 1), ?) RETURNING id",
-                Long.class, OffsetDateTime.ofInstant(startsAt, ZoneOffset.UTC));
     }
 
     private UUID tokenInDatabase(int seatRow, int seatNumber) {
