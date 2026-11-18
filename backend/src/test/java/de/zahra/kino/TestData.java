@@ -28,9 +28,10 @@ public class TestData {
     public void createBookedSeat(Long screeningId, int seatRow, int seatNumber) {
         UUID bookingId = UUID.randomUUID();
         jdbcTemplate.update(
-                "INSERT INTO booking (id, full_name, birth_date, email, terms_accepted_at) "
-                        + "VALUES (?, 'Test Guest', DATE '1990-01-01', 'guest@example.com', now())",
+                "INSERT INTO booking (id, full_name, birth_date, email, terms_accepted_at, privacy_accepted_at) "
+                        + "VALUES (?, 'Test Guest', DATE '1990-01-01', 'guest@example.com', now(), now())",
                 bookingId);
+        ;
         jdbcTemplate.update(
                 "INSERT INTO seat_reservation "
                         + "(screening_id, seat_row, seat_number, status, reservation_token, reserved_until, booking_id) "
