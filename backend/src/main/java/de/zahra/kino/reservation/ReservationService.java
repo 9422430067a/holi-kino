@@ -60,9 +60,16 @@ public class ReservationService {
             throw new SeatAlreadyTakenException(screeningId, seatRow, seatNumber);
         }
 
-        // Seat change only: release the old seat after the new one was reserved.
         // For a first reservation current is empty, so nothing happens.
-        current.ifPresent(reservationRepository::delete);
+        // Seat change only: release the old seat after the new one was reserved.
+        // If no row was deleted, another request changed or booked this reservation
+        // in the meantime; the exception rolls back the new seat as well.
+        if (current.isPresent()) {
+            int deletedRows = reservationRepository.deleteReservedById(current.get().getId());
+            if (deletedRows == 0) {
+                throw new ReservationNotActiveException(token);
+            }
+        }
 
         return new ReservationDto(token, screeningId, seatRow, seatNumber, reservedUntil);
     }

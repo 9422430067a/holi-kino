@@ -20,6 +20,15 @@ public class ReservationExceptionHandler {
 
     @ExceptionHandler(SeatAlreadyTakenException.class)
     public ProblemDetail handleSeatAlreadyTaken(SeatAlreadyTakenException exception) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Seat already taken");
+        return problem;
+    }
+
+    @ExceptionHandler(ReservationNotActiveException.class)
+    public ProblemDetail handleReservationNotActive(ReservationNotActiveException exception) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Reservation no longer active");
+        return problem;
     }
 }

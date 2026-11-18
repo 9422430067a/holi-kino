@@ -45,4 +45,12 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
             """)
     List<SeatReservation> findOccupiedSeats(@Param("screeningId") Long screeningId,
                                             @Param("now") Instant now);
+
+    @Modifying
+    @Query("""
+            DELETE FROM SeatReservation r
+            WHERE r.id = :id
+              AND r.status = de.zahra.kino.reservation.SeatStatus.RESERVED
+            """)
+    int deleteReservedById(@Param("id") Long id);
 }

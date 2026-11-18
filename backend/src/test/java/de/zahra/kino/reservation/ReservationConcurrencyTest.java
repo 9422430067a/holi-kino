@@ -83,4 +83,51 @@ class ReservationConcurrencyTest {
                 Integer.class, screeningId);
         assertThat(rows).isEqualTo(1);
     }
+
+    @Test
+    void concurrentSeatChangesOfOneGuestLeaveExactlyOneSeat() throws Exception {
+        Long screeningId = testData.createScreening(START.plus(1, ChronoUnit.DAYS));
+        ReservationDto original = reservationService.reserve(screeningId, 3, 4, null);
+        int changes = 10;
+
+        ExecutorService pool = Executors.newFixedThreadPool(changes);
+        CountDownLatch allReady = new CountDownLatch(changes);
+        CountDownLatch startSignal = new CountDownLatch(1);
+        List<Future<Boolean>> results = new ArrayList<>();
+
+        for (int i = 0; i < changes; i++) {
+            int seatNumber = 5 + i; // each change goes to a different seat: 5 to 14
+            results.add(pool.submit(() -> {
+                allReady.countDown();
+                startSignal.await();
+                try {
+                    reservationService.reserve(screeningId, 3, seatNumber, original.token());
+                    return true;
+                } catch (ReservationNotActiveException e) {
+                    return false;
+                }
+            }));
+        }
+
+        allReady.await();
+        startSignal.countDown();
+
+        int successes = 0;
+        for (Future<Boolean> result : results) {
+            if (result.get(10, TimeUnit.SECONDS)) {
+                successes++;
+            }
+        }
+        pool.shutdown();
+
+        assertThat(successes).isGreaterThanOrEqualTo(1);
+        assertThat(countRows("SELECT count(*) FROM seat_reservation WHERE reservation_token = ?",
+                original.token())).isEqualTo(1);
+        assertThat(countRows("SELECT count(*) FROM seat_reservation WHERE screening_id = ?",
+                screeningId)).isEqualTo(1);
+    }
+
+    private int countRows(String sql, Object parameter) {
+        return jdbcTemplate.queryForObject(sql, Integer.class, parameter);
+    }
 }
