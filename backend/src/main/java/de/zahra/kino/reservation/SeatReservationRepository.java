@@ -53,4 +53,20 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
               AND r.status = de.zahra.kino.reservation.SeatStatus.RESERVED
             """)
     int deleteReservedById(@Param("id") Long id);
+
+    @Modifying
+    @Query("""
+            UPDATE SeatReservation r
+            SET r.status = de.zahra.kino.reservation.SeatStatus.BOOKED,
+                r.reservedUntil = NULL,
+                r.bookingId = :bookingId
+            WHERE r.reservationToken = :token
+              AND r.status = de.zahra.kino.reservation.SeatStatus.RESERVED
+              AND r.reservedUntil > :now
+            """)
+    int book(@Param("token") UUID token,
+             @Param("bookingId") UUID bookingId,
+             @Param("now") Instant now);
+    
+    Optional<SeatReservation> findByBookingId(UUID bookingId);
 }
