@@ -1,5 +1,9 @@
-package de.zahra.kino.reservation;
+package de.zahra.kino.config;
 
+import de.zahra.kino.reservation.InvalidSeatException;
+import de.zahra.kino.reservation.ReservationNotActiveException;
+import de.zahra.kino.reservation.ScreeningNotAvailableException;
+import de.zahra.kino.reservation.SeatAlreadyTakenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,7 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 
 @RestControllerAdvice
-public class ReservationExceptionHandler extends ResponseEntityExceptionHandler {
+public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidSeatException.class)
     public ProblemDetail handleInvalidSeat(InvalidSeatException exception) {
