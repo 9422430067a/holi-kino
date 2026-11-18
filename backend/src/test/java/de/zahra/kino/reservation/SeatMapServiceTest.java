@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 import static de.zahra.kino.MutableClockConfiguration.START;
@@ -23,6 +24,9 @@ class SeatMapServiceTest {
 
     @Autowired
     private SeatMapService seatMapService;
+
+    @Autowired
+    private BookingService bookingService;
 
     @Autowired
     private ReservationService reservationService;
@@ -44,7 +48,7 @@ class SeatMapServiceTest {
     @Test
     void showsAllSeatsWithTheirCurrentStatus() {
         reservationService.reserve(screeningId, 3, 4, null);
-        testData.createBookedSeat(screeningId, 5, 6);
+        bookSeat(screeningId, 5, 6);
 
         SeatMapDto seatMap = seatMapService.getSeatMap(screeningId);
 
@@ -72,7 +76,7 @@ class SeatMapServiceTest {
 
     @Test
     void bookedSeatStaysBookedLongAfterTheReservationTime() {
-        testData.createBookedSeat(screeningId, 5, 6);
+        bookSeat(screeningId, 5, 6);
 
         clock.advance(Duration.ofHours(1));
 
@@ -84,7 +88,7 @@ class SeatMapServiceTest {
     void showsOnlyReservationsOfTheRequestedScreening() {
         Long otherScreeningId = testData.createScreening(START.plus(2, ChronoUnit.DAYS));
         reservationService.reserve(otherScreeningId, 3, 4, null);
-        testData.createBookedSeat(otherScreeningId, 5, 6);
+        bookSeat(otherScreeningId, 5, 6);
 
         SeatMapDto seatMap = seatMapService.getSeatMap(screeningId);
 
@@ -121,5 +125,11 @@ class SeatMapServiceTest {
                 .flatMap(row -> row.seats().stream())
                 .filter(seat -> seat.status() == status)
                 .count();
+    }
+
+    private void bookSeat(Long screeningId, int seatRow, int seatNumber) {
+        ReservationDto reservation = reservationService.reserve(screeningId, seatRow, seatNumber, null);
+        bookingService.book(new BookSeatRequest(reservation.token(), "Ada Lovelace",
+                LocalDate.of(1990, 5, 17), "ada@example.com", null, true, true, false));
     }
 }
