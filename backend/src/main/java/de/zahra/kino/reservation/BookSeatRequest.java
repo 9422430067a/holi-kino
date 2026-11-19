@@ -21,12 +21,12 @@ public record BookSeatRequest(
         @Size(max = 50)
         String phone,
 
-        @AssertTrue
-        boolean termsAccepted,
+        @NotNull @AssertTrue
+        Boolean termsAccepted,
 
-        @AssertTrue
-        boolean privacyAccepted,
+        @NotNull @AssertTrue
+        Boolean privacyAccepted,
 
-        boolean newsletterAccepted
+        Boolean newsletterAccepted
 ) {
 }

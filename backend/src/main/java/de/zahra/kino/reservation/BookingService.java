@@ -33,9 +33,9 @@ public class BookingService {
                 request.email().trim(),
                 blankToNull(request.phone()),
                 // Required consents: if validation was bypassed, the NOT NULL columns reject null.
-                request.termsAccepted() ? now : null,
-                request.privacyAccepted() ? now : null,
-                request.newsletterAccepted() ? now : null,
+                Boolean.TRUE.equals(request.termsAccepted()) ? now : null,
+                Boolean.TRUE.equals(request.privacyAccepted()) ? now : null,
+                Boolean.TRUE.equals(request.newsletterAccepted()) ? now : null,
                 now));
 
         int bookedRows = reservationRepository.book(request.reservationToken(), booking.getId(), now);
