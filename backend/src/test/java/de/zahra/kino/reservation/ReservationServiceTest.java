@@ -57,13 +57,6 @@ class ReservationServiceTest {
         assertThat(tokenInDatabase(3, 4)).isEqualTo(guestB.token());
     }
 
-    private UUID tokenInDatabase(int seatRow, int seatNumber) {
-        return jdbcTemplate.queryForObject(
-                "SELECT reservation_token FROM seat_reservation "
-                        + "WHERE screening_id = ? AND seat_row = ? AND seat_number = ?",
-                UUID.class, screeningId, seatRow, seatNumber);
-    }
-
     @Test
     void seatChangeKeepsTokenAndDeadlineAndReleasesOldSeat() {
         ReservationDto first = reservationService.reserve(screeningId, 3, 4, null);
@@ -82,12 +75,6 @@ class ReservationServiceTest {
 
         // The guest holds exactly one seat, not two.
         assertThat(rowsWithToken(first.token())).isEqualTo(1);
-    }
-
-    private int rowsWithToken(UUID token) {
-        return jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM seat_reservation WHERE reservation_token = ?",
-                Integer.class, token);
     }
 
     @Test
@@ -113,5 +100,18 @@ class ReservationServiceTest {
         ReservationDto guestB = reservationService.reserve(screeningId, 3, 4, null);
 
         assertThat(tokenInDatabase(3, 4)).isEqualTo(guestB.token());
+    }
+
+    private UUID tokenInDatabase(int seatRow, int seatNumber) {
+        return jdbcTemplate.queryForObject(
+                "SELECT reservation_token FROM seat_reservation "
+                        + "WHERE screening_id = ? AND seat_row = ? AND seat_number = ?",
+                UUID.class, screeningId, seatRow, seatNumber);
+    }
+
+    private int rowsWithToken(UUID token) {
+        return jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM seat_reservation WHERE reservation_token = ?",
+                Integer.class, token);
     }
 }
