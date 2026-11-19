@@ -1,14 +1,11 @@
 package de.zahra.kino.reservation;
 
+import de.zahra.kino.KinoServiceTest;
 import de.zahra.kino.MutableClock;
-import de.zahra.kino.MutableClockConfiguration;
 import de.zahra.kino.TestData;
-import de.zahra.kino.TestcontainersConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.temporal.ChronoUnit;
@@ -19,8 +16,7 @@ import java.util.concurrent.*;
 import static de.zahra.kino.MutableClockConfiguration.START;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@Import({TestcontainersConfiguration.class, MutableClockConfiguration.class, TestData.class})
+@KinoServiceTest
 class ReservationConcurrencyTest {
 
     @Autowired

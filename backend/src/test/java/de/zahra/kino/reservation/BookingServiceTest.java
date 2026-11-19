@@ -1,28 +1,22 @@
 package de.zahra.kino.reservation;
 
+import de.zahra.kino.KinoServiceTest;
 import de.zahra.kino.MutableClock;
-import de.zahra.kino.MutableClockConfiguration;
 import de.zahra.kino.TestData;
-import de.zahra.kino.TestcontainersConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
-import java.util.UUID;
 
 import static de.zahra.kino.MutableClockConfiguration.START;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@Import({TestcontainersConfiguration.class, MutableClockConfiguration.class, TestData.class})
+@KinoServiceTest
 class BookingServiceTest {
 
     @Autowired
@@ -56,7 +50,7 @@ class BookingServiceTest {
         ReservationDto reservation = reservationService.reserve(screeningId, 3, 4, null);
         clock.advance(Duration.ofMinutes(2));
 
-        BookingDto result = bookingService.book(request(reservation.token()));
+        BookingDto result = bookingService.book(TestData.bookingRequest(reservation.token()));
 
         assertThat(result.seatRow()).isEqualTo(3);
         assertThat(result.seatNumber()).isEqualTo(4);
@@ -82,7 +76,7 @@ class BookingServiceTest {
         clock.setInstant(reservation.reservedUntil());
         long bookingsBefore = bookingRepository.count();
 
-        assertThatThrownBy(() -> bookingService.book(request(reservation.token())))
+        assertThatThrownBy(() -> bookingService.book(TestData.bookingRequest(reservation.token())))
                 .isInstanceOf(ReservationNotActiveException.class);
 
         assertThat(bookingRepository.count()).isEqualTo(bookingsBefore);
@@ -91,17 +85,12 @@ class BookingServiceTest {
     @Test
     void reservationCanBeBookedOnlyOnce() {
         ReservationDto reservation = reservationService.reserve(screeningId, 3, 4, null);
-        bookingService.book(request(reservation.token()));
+        bookingService.book(TestData.bookingRequest(reservation.token()));
         long bookingsAfterFirst = bookingRepository.count();
 
-        assertThatThrownBy(() -> bookingService.book(request(reservation.token())))
+        assertThatThrownBy(() -> bookingService.book(TestData.bookingRequest(reservation.token())))
                 .isInstanceOf(ReservationNotActiveException.class);
 
         assertThat(bookingRepository.count()).isEqualTo(bookingsAfterFirst);
-    }
-
-    private static BookSeatRequest request(UUID token) {
-        return new BookSeatRequest(token, "Ada Lovelace", LocalDate.of(1990, 5, 17),
-                "ada@example.com", null, true, true, false);
     }
 }
