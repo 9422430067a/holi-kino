@@ -1,5 +1,5 @@
-import axios, { type AxiosError } from 'axios'
-import type { ProblemDetail } from './types'
+import axios, {type AxiosError} from 'axios'
+import type {ProblemDetail} from './types'
 
 /**
  * An error response of our backend. It carries the ProblemDetail, so a page can react to
@@ -16,7 +16,7 @@ export class ApiError extends Error {
 }
 
 // All calls go to /api: in development the Vite proxy forwards them, in the container Spring Boot answers itself.
-export const http = axios.create({ baseURL: '/api' })
+export const http = axios.create({baseURL: '/api'})
 
 // Turn error responses of the backend into an ApiError. Network errors (backend not reachable) stay as they are.
 http.interceptors.response.use(
@@ -29,3 +29,9 @@ http.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
+// Titles of our own error responses, as set in ApiExceptionHandler.
+export const PROBLEM_TITLES = {
+  seatAlreadyTaken: 'Seat already taken',
+  reservationNotActive: 'Reservation no longer active',
+} as const
