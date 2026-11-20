@@ -50,7 +50,7 @@ class BookingServiceTest {
         ReservationDto reservation = reservationService.reserve(screeningId, 3, 4, null);
         clock.advance(Duration.ofMinutes(2));
 
-        BookingDto result = bookingService.book(TestData.bookingRequest(reservation.token()));
+        BookingDto result = bookingService.book(TestData.bookingRequest(reservation.reservationToken()));
 
         assertThat(result.seatRow()).isEqualTo(3);
         assertThat(result.seatNumber()).isEqualTo(4);
@@ -58,7 +58,7 @@ class BookingServiceTest {
         // The seat row: booked, no deadline, points to the booking.
         Map<String, Object> seat = jdbcTemplate.queryForMap(
                 "SELECT status, reserved_until, booking_id FROM seat_reservation WHERE reservation_token = ?",
-                reservation.token());
+                reservation.reservationToken());
         assertThat(seat.get("status")).isEqualTo("BOOKED");
         assertThat(seat.get("reserved_until")).isNull();
         assertThat(seat.get("booking_id")).isEqualTo(result.bookingId());
@@ -76,7 +76,7 @@ class BookingServiceTest {
         clock.setInstant(reservation.reservedUntil());
         long bookingsBefore = bookingRepository.count();
 
-        assertThatThrownBy(() -> bookingService.book(TestData.bookingRequest(reservation.token())))
+        assertThatThrownBy(() -> bookingService.book(TestData.bookingRequest(reservation.reservationToken())))
                 .isInstanceOf(ReservationNotActiveException.class);
 
         assertThat(bookingRepository.count()).isEqualTo(bookingsBefore);
@@ -85,10 +85,10 @@ class BookingServiceTest {
     @Test
     void reservationCanBeBookedOnlyOnce() {
         ReservationDto reservation = reservationService.reserve(screeningId, 3, 4, null);
-        bookingService.book(TestData.bookingRequest(reservation.token()));
+        bookingService.book(TestData.bookingRequest(reservation.reservationToken()));
         long bookingsAfterFirst = bookingRepository.count();
 
-        assertThatThrownBy(() -> bookingService.book(TestData.bookingRequest(reservation.token())))
+        assertThatThrownBy(() -> bookingService.book(TestData.bookingRequest(reservation.reservationToken())))
                 .isInstanceOf(ReservationNotActiveException.class);
 
         assertThat(bookingRepository.count()).isEqualTo(bookingsAfterFirst);

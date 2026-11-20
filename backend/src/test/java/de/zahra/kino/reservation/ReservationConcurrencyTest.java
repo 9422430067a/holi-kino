@@ -97,7 +97,7 @@ class ReservationConcurrencyTest {
                 allReady.countDown();
                 startSignal.await();
                 try {
-                    reservationService.reserve(screeningId, 3, seatNumber, original.token());
+                    reservationService.reserve(screeningId, 3, seatNumber, original.reservationToken());
                     return true;
                 } catch (ReservationNotActiveException e) {
                     return false;
@@ -118,7 +118,7 @@ class ReservationConcurrencyTest {
 
         assertThat(successes).isGreaterThanOrEqualTo(1);
         assertThat(countRows("SELECT count(*) FROM seat_reservation WHERE reservation_token = ?",
-                original.token())).isEqualTo(1);
+                original.reservationToken())).isEqualTo(1);
         assertThat(countRows("SELECT count(*) FROM seat_reservation WHERE screening_id = ?",
                 screeningId)).isEqualTo(1);
     }

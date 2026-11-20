@@ -52,9 +52,9 @@ class ReservationServiceTest {
         clock.advance(Duration.ofSeconds(2));
         ReservationDto guestB = reservationService.reserve(screeningId, 3, 4, null);
 
-        assertThat(guestB.token()).isNotEqualTo(guestA.token());
+        assertThat(guestB.reservationToken()).isNotEqualTo(guestA.reservationToken());
         assertThat(guestB.reservedUntil()).isEqualTo(clock.instant().plus(Duration.ofMinutes(5)));
-        assertThat(tokenInDatabase(3, 4)).isEqualTo(guestB.token());
+        assertThat(tokenInDatabase(3, 4)).isEqualTo(guestB.reservationToken());
     }
 
     @Test
@@ -63,18 +63,18 @@ class ReservationServiceTest {
 
         // Change seats two minutes later, so a recalculated deadline would be noticed.
         clock.advance(Duration.ofMinutes(2));
-        ReservationDto changed = reservationService.reserve(screeningId, 3, 5, first.token());
+        ReservationDto changed = reservationService.reserve(screeningId, 3, 5, first.reservationToken());
 
-        assertThat(changed.token()).isEqualTo(first.token());
+        assertThat(changed.reservationToken()).isEqualTo(first.reservationToken());
         assertThat(changed.reservedUntil()).isEqualTo(first.reservedUntil());
         assertThat(changed.seatNumber()).isEqualTo(5);
 
         // The old seat is free again: another guest can reserve it right away.
         ReservationDto otherGuest = reservationService.reserve(screeningId, 3, 4, null);
-        assertThat(otherGuest.token()).isNotEqualTo(first.token());
+        assertThat(otherGuest.reservationToken()).isNotEqualTo(first.reservationToken());
 
         // The guest holds exactly one seat, not two.
-        assertThat(rowsWithToken(first.token())).isEqualTo(1);
+        assertThat(rowsWithToken(first.reservationToken())).isEqualTo(1);
     }
 
     @Test
@@ -82,13 +82,13 @@ class ReservationServiceTest {
         ReservationDto otherGuest = reservationService.reserve(screeningId, 3, 5, null);
         ReservationDto mine = reservationService.reserve(screeningId, 3, 4, null);
 
-        assertThatThrownBy(() -> reservationService.reserve(screeningId, 3, 5, mine.token()))
+        assertThatThrownBy(() -> reservationService.reserve(screeningId, 3, 5, mine.reservationToken()))
                 .isInstanceOf(SeatAlreadyTakenException.class);
 
         // Both guests still hold exactly the seats they had before.
-        assertThat(tokenInDatabase(3, 4)).isEqualTo(mine.token());
-        assertThat(tokenInDatabase(3, 5)).isEqualTo(otherGuest.token());
-        assertThat(rowsWithToken(mine.token())).isEqualTo(1);
+        assertThat(tokenInDatabase(3, 4)).isEqualTo(mine.reservationToken());
+        assertThat(tokenInDatabase(3, 5)).isEqualTo(otherGuest.reservationToken());
+        assertThat(rowsWithToken(mine.reservationToken())).isEqualTo(1);
     }
 
     @Test
@@ -99,7 +99,7 @@ class ReservationServiceTest {
         clock.setInstant(guestA.reservedUntil());
         ReservationDto guestB = reservationService.reserve(screeningId, 3, 4, null);
 
-        assertThat(tokenInDatabase(3, 4)).isEqualTo(guestB.token());
+        assertThat(tokenInDatabase(3, 4)).isEqualTo(guestB.reservationToken());
     }
 
     private UUID tokenInDatabase(int seatRow, int seatNumber) {

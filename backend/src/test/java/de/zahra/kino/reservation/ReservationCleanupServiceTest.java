@@ -55,16 +55,16 @@ class ReservationCleanupServiceTest {
         clock.advance(Duration.ofMinutes(4));
         ReservationDto stillActive = reservationService.reserve(screeningId, 3, 5, null);
         ReservationDto booked = reservationService.reserve(screeningId, 3, 6, null);
-        bookingService.book(TestData.bookingRequest(booked.token()));
+        bookingService.book(TestData.bookingRequest(booked.reservationToken()));
 
         // Exactly at the deadline of the first reservation.
         clock.setInstant(expired.reservedUntil());
         int deleted = cleanupService.deleteExpiredReservations();
 
         assertThat(deleted).isGreaterThanOrEqualTo(1);
-        assertThat(rowExists(expired.token())).isFalse();
-        assertThat(rowExists(stillActive.token())).isTrue();
-        assertThat(rowExists(booked.token())).isTrue();
+        assertThat(rowExists(expired.reservationToken())).isFalse();
+        assertThat(rowExists(stillActive.reservationToken())).isTrue();
+        assertThat(rowExists(booked.reservationToken())).isTrue();
     }
 
     @Test

@@ -32,7 +32,7 @@ class ReservationControllerTest {
 
         reserveSeat()
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.token").value(token.toString()))
+                .andExpect(jsonPath("$.reservationToken").value(token.toString()))
                 .andExpect(jsonPath("$.reservedUntil").value("2036-01-01T12:05:00Z"));
     }
 

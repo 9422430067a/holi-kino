@@ -29,7 +29,7 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
     int reserve(@Param("screeningId") Long screeningId,
                 @Param("seatRow") int seatRow,
                 @Param("seatNumber") int seatNumber,
-                @Param("token") UUID token,
+                @Param("reservationToken") UUID token,
                 @Param("reservedUntil") Instant reservedUntil,
                 @Param("now") Instant now);
 
@@ -64,7 +64,7 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
               AND r.status = de.zahra.kino.reservation.SeatStatus.RESERVED
               AND r.reservedUntil > :now
             """)
-    int book(@Param("token") UUID token,
+    int book(@Param("reservationToken") UUID token,
              @Param("bookingId") UUID bookingId,
              @Param("now") Instant now);
 

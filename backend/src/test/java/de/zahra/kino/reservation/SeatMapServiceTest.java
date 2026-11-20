@@ -124,6 +124,6 @@ class SeatMapServiceTest {
 
     private void bookSeat(Long screeningId, int seatRow, int seatNumber) {
         ReservationDto reservation = reservationService.reserve(screeningId, seatRow, seatNumber, null);
-        bookingService.book(TestData.bookingRequest(reservation.token()));
+        bookingService.book(TestData.bookingRequest(reservation.reservationToken()));
     }
 }

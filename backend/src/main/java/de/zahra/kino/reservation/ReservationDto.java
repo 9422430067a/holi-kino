@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 public record ReservationDto(
-        UUID token,
+        UUID reservationToken,
         Long screeningId,
         int seatRow,
         int seatNumber,

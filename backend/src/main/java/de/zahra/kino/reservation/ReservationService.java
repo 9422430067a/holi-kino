@@ -41,7 +41,7 @@ public class ReservationService {
             throw new ScreeningNotAvailableException(screeningId);
         }
 
-        // No token, or an expired, unknown or already booked one: current is empty, so this is a first reservation.
+        // No reservationToken, or an expired, unknown or already booked one: current is empty, so this is a first reservation.
         Optional<SeatReservation> current = findActiveReservation(existingToken, now);
 
         if (current.isPresent() && isSameSeat(current.get(), screeningId, seatRow, seatNumber)) {

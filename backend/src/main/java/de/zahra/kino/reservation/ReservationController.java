@@ -18,6 +18,6 @@ public class ReservationController {
     public ReservationDto reserve(@PathVariable Long screeningId,
                                   @RequestBody ReserveSeatRequest request) {
         return reservationService.reserve(
-                screeningId, request.seatRow(), request.seatNumber(), request.token());
+                screeningId, request.seatRow(), request.seatNumber(), request.reservationToken());
     }
 }
