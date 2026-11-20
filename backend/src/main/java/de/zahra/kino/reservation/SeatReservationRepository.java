@@ -17,7 +17,7 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
             INSERT INTO seat_reservation
                 (screening_id, seat_row, seat_number, status, reservation_token, reserved_until)
             VALUES
-                (:screeningId, :seatRow, :seatNumber, 'RESERVED', :token, :reservedUntil)
+                (:screeningId, :seatRow, :seatNumber, 'RESERVED', :reservationToken, :reservedUntil)
             ON CONFLICT (screening_id, seat_row, seat_number)
             DO UPDATE SET
                 status = 'RESERVED',
@@ -29,7 +29,7 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
     int reserve(@Param("screeningId") Long screeningId,
                 @Param("seatRow") int seatRow,
                 @Param("seatNumber") int seatNumber,
-                @Param("reservationToken") UUID token,
+                @Param("reservationToken") UUID reservationToken,
                 @Param("reservedUntil") Instant reservedUntil,
                 @Param("now") Instant now);
 
@@ -60,11 +60,11 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
             SET r.status = de.zahra.kino.reservation.SeatStatus.BOOKED,
                 r.reservedUntil = NULL,
                 r.bookingId = :bookingId
-            WHERE r.reservationToken = :token
+            WHERE r.reservationToken = :reservationToken
               AND r.status = de.zahra.kino.reservation.SeatStatus.RESERVED
               AND r.reservedUntil > :now
             """)
-    int book(@Param("reservationToken") UUID token,
+    int book(@Param("reservationToken") UUID reservationToken,
              @Param("bookingId") UUID bookingId,
              @Param("now") Instant now);
 
