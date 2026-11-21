@@ -1,33 +1,24 @@
 <script setup lang="ts">
-import {computed, ref, watch} from 'vue'
+import {computed, ref} from 'vue'
 import {RouterLink} from 'vue-router'
 import {ApiError, PROBLEM_TITLES} from '@/api/client'
-import {fetchSeatMap} from '@/api/kinoApi'
-import type {Seat, SeatMap} from '@/api/types'
+import type {Seat} from '@/api/types'
+import {useSeatMap} from '@/composables/useSeatMap'
 import {useReservationStore} from '@/stores/reservation'
 
 const props = defineProps<{ screeningId: number }>()
 const store = useReservationStore()
+const {seatMap, loadError, reload} = useSeatMap(() => props.screeningId)
 
-const seatMap = ref<SeatMap | null>(null)
-const loadError = ref<string | null>(null)
 const message = ref<string | null>(null)
 const busy = ref(false)
 
-async function loadSeatMap(): Promise<void> {
-  try {
-    seatMap.value = await fetchSeatMap(props.screeningId)
-    loadError.value = null
-  } catch (error) {
-    loadError.value =
-      error instanceof ApiError && error.problem.status === 404
-        ? 'Diese Vorstellung ist nicht mehr buchbar.'
-        : 'Der Sitzplan konnte nicht geladen werden.'
-  }
-}
+const LOAD_ERROR_TEXT = {
+  'not-bookable': 'Diese Vorstellung ist nicht mehr buchbar.',
+  failed: 'Der Sitzplan konnte nicht geladen werden.',
+} as const
 
-// Also reload when the guest switches to another screening while this page stays open.
-watch(() => props.screeningId, loadSeatMap, {immediate: true})
+const STATUS_TEXT = {AVAILABLE: 'frei', RESERVED: 'reserviert', BOOKED: 'gebucht'} as const
 
 // The backend reports the guest's own seat as RESERVED; the store knows which one it is.
 function isMine(seatRow: number, seat: Seat): boolean {
@@ -54,7 +45,7 @@ async function selectSeat(seatRow: number, seat: Seat): Promise<void> {
     message.value = messageFor(error)
   } finally {
     // Success or not: show the current state of the auditorium.
-    await loadSeatMap()
+    await reload()
     busy.value = false
   }
 }
@@ -74,8 +65,6 @@ function messageFor(error: unknown): string {
   return 'Das hat leider nicht geklappt. Bitte versuche es erneut.'
 }
 
-const STATUS_TEXT = {AVAILABLE: 'frei', RESERVED: 'reserviert', BOOKED: 'gebucht'} as const
-
 function seatLabel(seatRow: number, seat: Seat): string {
   const state = isMine(seatRow, seat) ? 'dein Platz' : STATUS_TEXT[seat.status]
   return `Reihe ${seatRow}, Platz ${seat.seatNumber}, ${state}`
@@ -87,7 +76,7 @@ function seatLabel(seatRow: number, seat: Seat): string {
     <RouterLink to="/">← Alle Vorstellungen</RouterLink>
     <h1>Platz wählen</h1>
 
-    <p v-if="loadError" class="error" role="alert">{{ loadError }}</p>
+    <p v-if="loadError" class="error" role="alert">{{ LOAD_ERROR_TEXT[loadError] }}</p>
     <p v-else-if="!seatMap">Sitzplan wird geladen …</p>
 
     <template v-else>
