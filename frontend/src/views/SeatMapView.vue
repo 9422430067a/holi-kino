@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import {computed, ref} from 'vue'
+import {computed, ref, watch} from 'vue'
 import {RouterLink} from 'vue-router'
 import {ApiError, PROBLEM_TITLES} from '@/api/client'
 import type {Seat} from '@/api/types'
 import {useSeatMap} from '@/composables/useSeatMap'
 import {useReservationStore} from '@/stores/reservation'
+import ReservationCountdown from "@/components/ReservationCountdown.vue";
 
 const props = defineProps<{ screeningId: number }>()
 const store = useReservationStore()
@@ -50,13 +51,13 @@ async function selectSeat(seatRow: number, seat: Seat): Promise<void> {
   }
 }
 
-function messageFor(error: unknown): string {
+function messageFor(error: unknown): string | null {
   if (error instanceof ApiError) {
     if (error.problem.title === PROBLEM_TITLES.seatAlreadyTaken) {
       return 'Dieser Platz wurde gerade von jemand anderem gewählt. Bitte wähle einen anderen.'
     }
     if (error.problem.title === PROBLEM_TITLES.reservationNotActive) {
-      return 'Deine Reservierung ist abgelaufen. Bitte wähle erneut einen Platz.'
+      return null // shown through store.expired
     }
     if (error.problem.status === 404) {
       return 'Diese Vorstellung ist nicht mehr buchbar.'
@@ -69,6 +70,11 @@ function seatLabel(seatRow: number, seat: Seat): string {
   const state = isMine(seatRow, seat) ? 'dein Platz' : STATUS_TEXT[seat.status]
   return `Reihe ${seatRow}, Platz ${seat.seatNumber}, ${state}`
 }
+
+// After every answer from the server: is my reservation still valid?
+watch(seatMap, (value) => {
+  if (value) store.syncWithSeatMap(value)
+})
 </script>
 
 <template>
@@ -110,9 +116,16 @@ function seatLabel(seatRow: number, seat: Seat): string {
 
       <p v-if="message" class="error" role="alert">{{ message }}</p>
 
-      <p v-if="myReservationHere" class="summary">
-        Dein Platz: Reihe {{ myReservationHere.seatRow }}, Platz {{ myReservationHere.seatNumber }}
+      <p v-if="store.expired" class="error" role="alert">
+        Deine Reservierung ist abgelaufen. Bitte wähle erneut einen Platz.
       </p>
+
+      <div v-if="myReservationHere" class="summary">
+        <p>Dein Platz: Reihe {{ myReservationHere.seatRow }}, Platz {{
+            myReservationHere.seatNumber
+          }}</p>
+        <ReservationCountdown :deadline="myReservationHere.reservedUntil"/>
+      </div>
     </template>
   </main>
 </template>
