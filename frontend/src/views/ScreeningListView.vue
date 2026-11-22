@@ -35,7 +35,7 @@ const days = computed(() => {
 
 <template>
   <main class="page">
-    <h1>Holi Lichtspielhaus</h1>
+    <h1>Vorstellungen</h1>
     <p class="lead">Wähle eine Vorstellung.</p>
 
     <p v-if="loading">Vorstellungen werden geladen …</p>

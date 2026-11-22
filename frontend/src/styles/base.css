@@ -1,0 +1,73 @@
+/* Base styles for the whole app. Everything uses the tokens from tokens.css. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size-m);
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+h1 {
+  font-size: var(--font-size-xl);
+  margin: 0 0 var(--space-m);
+}
+
+h2 {
+  font-size: var(--font-size-l);
+  margin: var(--space-l) 0 var(--space-s);
+}
+
+a {
+  color: var(--color-primary);
+}
+
+/* A clearly visible focus for keyboard users. An outline also works in high contrast mode. */
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Shared building blocks, used by several pages. */
+.page {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--space-l) var(--space-m) var(--space-xl);
+}
+
+.button {
+  display: inline-block;
+  padding: var(--space-s) var(--space-l);
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-primary-contrast);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-s);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--color-primary-hover);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error {
+  color: var(--color-danger);
+}
+
+.muted {
+  color: var(--color-text-muted);
+}

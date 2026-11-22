@@ -1,0 +1,46 @@
+/*
+ * Design tokens: every visual decision lives here once.
+ * Components only use these variables, never raw colors or sizes.
+ */
+:root {
+  /* Colors */
+  --color-bg: #f6f7f7;
+  --color-surface: #ffffff;
+  --color-text: #1c2526;
+  --color-text-muted: #59656a;
+  --color-border: #d4dadc;
+
+  --color-primary: #0f5c63; /* deep petrol */
+  --color-primary-hover: #0a464c;
+  --color-primary-contrast: #ffffff; /* text on primary */
+  --color-primary-soft: #e3f0f1; /* light background with primary meaning */
+
+  --color-danger: #b3261e;
+  --color-danger-soft: #fbeceb;
+  --color-focus: #0f5c63;
+
+  /* Seat states */
+  --color-seat-available: #ffffff;
+  --color-seat-mine: var(--color-primary);
+  --color-seat-reserved: #f2c94c;
+  --color-seat-booked: #9aa3a6;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-s: 0.5rem;
+  --space-m: 1rem;
+  --space-l: 1.5rem;
+  --space-xl: 2.5rem;
+
+  /* Typography: the system font of the device, nothing to download */
+  --font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-size-s: 0.875rem;
+  --font-size-m: 1rem;
+  --font-size-l: 1.25rem;
+  --font-size-xl: 1.75rem;
+
+  /* Shape and layout */
+  --radius-s: 0.375rem;
+  --radius-m: 0.75rem;
+  --content-width: 44rem;
+}
