@@ -1,14 +1,14 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {createPinia, setActivePinia} from 'pinia'
 import {ApiError, PROBLEM_TITLES} from '@/api/client'
-import {reserveSeat} from '@/api/kinoApi'
+import {bookSeat, reserveSeat} from '@/api/kinoApi'
 import type {Reservation, SeatAvailability, SeatMap} from '@/api/types'
 import {useReservationStore} from '../reservation'
 
 // Replace the real API calls: these tests are about the store, not the backend.
 vi.mock('@/api/kinoApi', () => ({
-  reserveSeat: vi.fn(),
-  bookSeat: vi.fn(),
+  reserveSeat: vi.fn<typeof reserveSeat>(),
+  bookSeat: vi.fn<typeof bookSeat>(),
 }))
 
 const NOW = new Date('2036-03-02T12:00:00Z')
