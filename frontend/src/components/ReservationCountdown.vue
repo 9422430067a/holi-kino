@@ -35,11 +35,12 @@ const display = computed(() => {
 
 <style scoped>
 .countdown {
+  margin: 0;
   font-variant-numeric: tabular-nums;
 }
 
 .urgent {
-  color: #b00020;
+  color: var(--color-danger);
   font-weight: 600;
 }
 </style>

@@ -130,7 +130,7 @@ watch(seatMap, (value) => {
             myReservationHere.seatNumber
           }}</p>
         <ReservationCountdown :deadline="myReservationHere.reservedUntil"/>
-        <RouterLink :to="{ name: 'booking', params: { id: screeningId } }" class="next">
+        <RouterLink :to="{ name: 'booking', params: { id: screeningId } }" class="button">
           Weiter zu deinen Daten
         </RouterLink>
       </div>
@@ -139,103 +139,99 @@ watch(seatMap, (value) => {
 </template>
 
 <style scoped>
-.page {
-  max-width: 60rem;
-  margin: 0 auto;
-  padding: 1.5rem;
-  font-family: system-ui, sans-serif;
-}
-
-.error {
-  color: #b00020;
-}
-
 .screen {
-  margin: 1rem auto 1.5rem;
-  padding: 0.25rem;
+  margin: var(--space-l) auto var(--space-l);
+  padding: var(--space-xs);
   max-width: 30rem;
   text-align: center;
-  border-bottom: 4px solid #999;
-  color: #666;
+  font-size: var(--font-size-s);
+  color: var(--color-text-muted);
+  border-bottom: 4px solid var(--color-border);
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
 }
 
 .seat-map {
   overflow-x: auto;
+  padding-bottom: var(--space-s);
 }
 
 .row {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  margin-bottom: 0.25rem;
+  justify-content: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
+  min-width: max-content;
 }
 
 .row-label {
   width: 1.5rem;
   text-align: right;
-  color: #666;
-  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-s);
 }
 
 .seat {
   width: 2rem;
   height: 2rem;
-  border: 1px solid #999;
-  border-radius: 0.4rem 0.4rem 0.2rem 0.2rem;
+  padding: 0;
   font-size: 0.7rem;
-  display: inline-block;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-s) var(--radius-s) 2px 2px;
 }
 
 .available {
-  background: #fff;
+  background: var(--color-seat-available);
   cursor: pointer;
 }
 
-.available:hover, .available:focus-visible {
-  border-color: #000;
+.available:hover {
+  border-color: var(--color-primary);
 }
 
 .mine {
-  background: #2e7d32;
-  color: #fff;
-  border-color: #1b5e20;
+  background: var(--color-seat-mine);
+  border-color: var(--color-seat-mine);
+  color: var(--color-primary-contrast);
+  font-weight: 700;
 }
 
 .reserved {
-  background: #f9a825;
+  background: var(--color-seat-reserved);
 }
 
 .booked {
-  background: #9e9e9e;
-  color: #fff;
+  background: var(--color-seat-booked);
 }
 
 .legend {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-m);
   list-style: none;
   padding: 0;
-  margin-top: 1rem;
-  font-size: 0.9rem;
+  margin: var(--space-m) 0;
+  font-size: var(--font-size-s);
 }
 
 .legend .seat {
   width: 1rem;
   height: 1rem;
+  display: inline-block;
   vertical-align: middle;
 }
 
 .summary {
-  font-weight: 600;
+  margin-top: var(--space-l);
+  padding: var(--space-m);
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-m);
 }
 
-.next {
-  display: inline-block;
-  margin-top: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #222;
-  color: #fff;
-  border-radius: 0.4rem;
-  text-decoration: none;
+.summary p {
+  margin: 0 0 var(--space-xs);
+  font-weight: 600;
 }
 </style>

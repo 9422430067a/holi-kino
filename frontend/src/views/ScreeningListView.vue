@@ -36,7 +36,7 @@ const days = computed(() => {
 <template>
   <main class="page">
     <h1>Vorstellungen</h1>
-    <p class="lead">Wähle eine Vorstellung.</p>
+    <p class="muted">Wähle eine Vorstellung.</p>
 
     <p v-if="loading">Vorstellungen werden geladen …</p>
     <p v-else-if="error" class="error" role="alert">{{ error }}</p>
@@ -63,52 +63,49 @@ const days = computed(() => {
 </template>
 
 <style scoped>
-.page {
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: 1.5rem;
-  font-family: system-ui, sans-serif;
-}
-
-.lead {
-  color: #555;
-}
-
-.error {
-  color: #b00020;
-}
-
 .day h2 {
-  font-size: 1.1rem;
-  margin-top: 1.5rem;
+  font-size: var(--font-size-m);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .screening {
   display: grid;
   grid-template-columns: 4rem 1fr auto;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  margin-bottom: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 0.5rem;
+  align-items: center;
+  gap: var(--space-m);
+  padding: var(--space-m);
+  margin-bottom: var(--space-s);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-m);
   color: inherit;
   text-decoration: none;
 }
 
-.screening:hover, .screening:focus-visible {
-  border-color: #333;
+.screening:hover {
+  border-color: var(--color-primary);
 }
 
 .time {
+  font-weight: 700;
+  font-size: var(--font-size-l);
+  color: var(--color-primary);
+}
+
+.title {
   font-weight: 600;
 }
 
 .duration {
-  color: #555;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-s);
 }
 </style>

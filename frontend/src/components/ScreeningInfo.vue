@@ -17,7 +17,12 @@ defineProps<{ screening: Screening }>()
 .screening-info {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 1rem;
-  color: #333;
+  gap: var(--space-xs) var(--space-m);
+  margin: 0 0 var(--space-m);
+  color: var(--color-text-muted);
+}
+
+.screening-info strong {
+  color: var(--color-text);
 }
 </style>

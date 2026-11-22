@@ -33,15 +33,22 @@ const errorId = `${props.name}-error`
 .checkbox {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.5rem;
+  gap: var(--space-s);
   align-items: start;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-m);
+}
+
+input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.2rem;
+  accent-color: var(--color-primary);
 }
 
 .field-error {
   grid-column: 2;
-  color: #b00020;
-  font-size: 0.9rem;
   margin: 0;
+  font-size: var(--font-size-s);
+  color: var(--color-danger);
 }
 </style>

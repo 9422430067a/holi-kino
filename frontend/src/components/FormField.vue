@@ -33,28 +33,33 @@ const errorId = `${props.name}-error`
 
 <style scoped>
 .field {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-m);
 }
 
 label {
   display: block;
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--space-xs);
+  font-weight: 600;
 }
 
 input {
   width: 100%;
-  padding: 0.5rem;
+  padding: var(--space-s) var(--space-m);
   font: inherit;
-  box-sizing: border-box;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-s);
 }
 
 input[aria-invalid='true'] {
-  border-color: #b00020;
+  border-color: var(--color-danger);
+  background: var(--color-danger-soft);
 }
 
 .field-error {
-  color: #b00020;
-  font-size: 0.9rem;
-  margin: 0.25rem 0 0;
+  margin: var(--space-xs) 0 0;
+  font-size: var(--font-size-s);
+  color: var(--color-danger);
 }
 </style>

@@ -69,30 +69,42 @@ const {onSubmit, isSubmitting, submitError} = useBookingForm({
 </template>
 
 <style scoped>
-.page {
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: 1.5rem;
-  font-family: system-ui, sans-serif;
+.summary {
+  margin: var(--space-m) 0;
+  padding: var(--space-m);
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-m);
 }
 
 .summary p {
-  margin: 0.25rem 0;
+  margin: 0 0 var(--space-xs);
   font-weight: 600;
 }
 
 .expired {
-  padding: 1rem;
-  margin: 1rem 0;
-  border: 1px solid #b00020;
-  border-radius: 0.5rem;
-  color: #b00020;
+  margin: var(--space-m) 0;
+  padding: var(--space-m);
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-m);
+}
+
+.expired p {
+  margin: 0 0 var(--space-s);
+}
+
+form {
+  padding: var(--space-l);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-m);
 }
 
 fieldset {
   border: none;
   padding: 0;
-  margin: 1rem 0 0;
+  margin: 0;
 }
 
 fieldset:disabled {
@@ -100,23 +112,8 @@ fieldset:disabled {
 }
 
 .hint {
-  color: #555;
-  font-size: 0.9rem;
-}
-
-.error {
-  color: #b00020;
-}
-
-.button {
-  display: inline-block;
-  padding: 0.6rem 1.2rem;
-  background: #222;
-  color: #fff;
-  border: none;
-  border-radius: 0.4rem;
-  font: inherit;
-  text-decoration: none;
-  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-s);
+  margin-top: 0;
 }
 </style>
