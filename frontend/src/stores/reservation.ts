@@ -1,24 +1,39 @@
 import {defineStore} from 'pinia'
 import {ApiError, PROBLEM_TITLES} from '@/api/client'
-import {reserveSeat} from '@/api/kinoApi'
-import type {Reservation, SeatMap} from '@/api/types'
+import {bookSeat, reserveSeat} from '@/api/kinoApi'
+import type {Booking, BookSeatRequest, Reservation, SeatMap} from '@/api/types'
 
-const STORAGE_KEY = 'holi-kino.reservation'
+const RESERVATION_KEY = 'holi-kino.reservation'
+const BOOKING_KEY = 'holi-kino.booking'
 
-// Restore a reservation after a page reload, as long as its deadline has not passed yet.
-function loadStoredReservation(): Reservation | null {
+// The form data of a booking; the token comes from the current reservation.
+export type BookingFormValues = Omit<BookSeatRequest, 'reservationToken'>
+
+function readStored<T>(key: string): T | null {
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    const stored = JSON.parse(raw) as Reservation
-    return isExpired(stored) ? null : stored
+    const raw = sessionStorage.getItem(key)
+    return raw ? (JSON.parse(raw) as T) : null
   } catch {
     return null
   }
 }
 
+function writeStored(key: string, value: unknown): void {
+  if (value) {
+    sessionStorage.setItem(key, JSON.stringify(value))
+  } else {
+    sessionStorage.removeItem(key)
+  }
+}
+
 function isExpired(reservation: Reservation): boolean {
   return new Date(reservation.reservedUntil).getTime() <= Date.now()
+}
+
+// Restore a reservation after a page reload, as long as its deadline has not passed yet.
+function loadStoredReservation(): Reservation | null {
+  const stored = readStored<Reservation>(RESERVATION_KEY)
+  return stored && !isExpired(stored) ? stored : null
 }
 
 // A timer is not part of the state (it is not data), so it lives outside the store.
@@ -40,6 +55,8 @@ export const useReservationStore = defineStore('reservation', {
       reservation,
       // True after a reservation ran out, until the guest reserves again. Lets pages explain what happened.
       expired: false,
+      // The last completed booking. Kept in sessionStorage: without e-mail it is the guest's only confirmation.
+      booking: readStored<Booking>(BOOKING_KEY),
     }
   },
 
@@ -66,7 +83,25 @@ export const useReservationStore = defineStore('reservation', {
       }
     },
 
-    // Compare with what the server reports
+    // Turns the current reservation into a booking. Errors are passed on, so the form can show them.
+    async book(form: BookingFormValues): Promise<void> {
+      const reservation = this.reservation
+      if (!reservation) {
+        throw new Error('There is no reservation to book.')
+      }
+      try {
+        const booking = await bookSeat({...form, reservationToken: reservation.reservationToken})
+        this.setBooking(booking)
+        this.clear()
+      } catch (error) {
+        if (error instanceof ApiError && error.problem.title === PROBLEM_TITLES.reservationNotActive) {
+          this.expire()
+        }
+        throw error
+      }
+    },
+
+    // Compare with what the server reports. The server is the source of truth.
     syncWithSeatMap(seatMap: SeatMap): void {
       const reservation = this.reservation
       if (!reservation) return
@@ -98,12 +133,15 @@ export const useReservationStore = defineStore('reservation', {
     setReservation(reservation: Reservation | null): void {
       this.reservation = reservation
       scheduleExpiry(reservation)
+      writeStored(RESERVATION_KEY, reservation)
       if (reservation) {
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(reservation))
         this.expired = false
-      } else {
-        sessionStorage.removeItem(STORAGE_KEY)
       }
+    },
+
+    setBooking(booking: Booking | null): void {
+      this.booking = booking
+      writeStored(BOOKING_KEY, booking)
     },
   },
 })

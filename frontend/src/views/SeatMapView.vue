@@ -125,6 +125,9 @@ watch(seatMap, (value) => {
             myReservationHere.seatNumber
           }}</p>
         <ReservationCountdown :deadline="myReservationHere.reservedUntil"/>
+        <RouterLink :to="{ name: 'booking', params: { id: screeningId } }" class="next">
+          Weiter zu deinen Daten
+        </RouterLink>
       </div>
     </template>
   </main>
@@ -219,5 +222,15 @@ watch(seatMap, (value) => {
 
 .summary {
   font-weight: 600;
+}
+
+.next {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #222;
+  color: #fff;
+  border-radius: 0.4rem;
+  text-decoration: none;
 }
 </style>
