@@ -25,4 +25,13 @@ public class ScreeningService {
                 .map(ScreeningDto::from)
                 .toList();
     }
+
+    // Information only: also returns a screening that has already started.
+    // Whether it can still be booked is checked by the seat map, reservation and booking.
+    @Transactional(readOnly = true)
+    public ScreeningDto getScreening(Long id) {
+        return screeningRepository.findByIdWithMovie(id)
+                .map(ScreeningDto::from)
+                .orElseThrow(() -> new ScreeningNotFoundException(id));
+    }
 }

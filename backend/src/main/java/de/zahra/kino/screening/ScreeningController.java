@@ -1,6 +1,7 @@
 package de.zahra.kino.screening;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,5 +20,10 @@ public class ScreeningController {
     @GetMapping
     public List<ScreeningDto> getUpcomingScreenings() {
         return screeningService.findUpcomingScreenings();
+    }
+
+    @GetMapping("/{id}")
+    public ScreeningDto getScreening(@PathVariable Long id) {
+        return screeningService.getScreening(id);
     }
 }

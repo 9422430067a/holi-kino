@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public interface ScreeningRepository extends JpaRepository<Screening, Long> {
 
@@ -18,4 +19,11 @@ public interface ScreeningRepository extends JpaRepository<Screening, Long> {
     List<Screening> findUpcomingWithMovie(@Param("now") Instant now);
 
     boolean existsByIdAndStartsAtAfter(Long id, Instant startsAt);
+
+    @Query("""
+            SELECT s FROM Screening s
+            JOIN FETCH s.movie
+            WHERE s.id = :id
+            """)
+    Optional<Screening> findByIdWithMovie(@Param("id") Long id);
 }

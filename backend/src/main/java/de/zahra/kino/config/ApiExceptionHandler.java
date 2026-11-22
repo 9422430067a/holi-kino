@@ -4,6 +4,7 @@ import de.zahra.kino.reservation.InvalidSeatException;
 import de.zahra.kino.reservation.ReservationNotActiveException;
 import de.zahra.kino.reservation.ScreeningNotAvailableException;
 import de.zahra.kino.reservation.SeatAlreadyTakenException;
+import de.zahra.kino.screening.ScreeningNotFoundException;
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,6 +41,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
         problem.setTitle("Reservation no longer active");
         return problem;
+    }
+
+    @ExceptionHandler(ScreeningNotFoundException.class)
+    public ProblemDetail handleScreeningNotFound(ScreeningNotFoundException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
     }
 
     @Override
