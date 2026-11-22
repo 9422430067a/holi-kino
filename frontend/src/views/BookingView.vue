@@ -6,10 +6,14 @@ import ReservationCountdown from '@/components/ReservationCountdown.vue'
 import {useBookingForm} from '@/composables/useBookingForm'
 import {useReservationStore} from '@/stores/reservation'
 import {todayAsIsoDate} from '@/utils/bookingRules'
+import {useScreening} from "@/composables/useScreening.ts";
+import ScreeningInfo from "@/components/ScreeningInfo.vue";
 
-defineProps<{ screeningId: number }>()
+const props = defineProps<{ screeningId: number }>()
 const store = useReservationStore()
 const router = useRouter()
+
+const {screening} = useScreening(() => props.screeningId)
 
 const {onSubmit, isSubmitting, submitError} = useBookingForm({
   onBooked: () => router.push({name: 'confirmation'}),
@@ -21,6 +25,7 @@ const {onSubmit, isSubmitting, submitError} = useBookingForm({
     <RouterLink :to="{ name: 'seatMap', params: { id: screeningId } }">← Zurück zum Sitzplan
     </RouterLink>
     <h1>Deine Daten</h1>
+    <ScreeningInfo v-if="screening" :screening="screening"/>
 
     <div v-if="store.expired" class="expired" role="alert">
       <p>Deine Reservierung ist abgelaufen. Bitte wähle einen neuen Platz.</p>

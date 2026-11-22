@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {RouterLink} from 'vue-router'
 import {useReservationStore} from '@/stores/reservation'
+import ScreeningInfo from "@/components/ScreeningInfo.vue";
 
 const store = useReservationStore()
 </script>
@@ -8,6 +9,7 @@ const store = useReservationStore()
 <template>
   <main v-if="store.booking" class="page">
     <h1>Deine Buchung ist bestätigt</h1>
+    <ScreeningInfo v-if="store.bookedScreening" :screening="store.bookedScreening"/>
     <p>
       Reihe {{ store.booking.seatRow }}, Platz {{ store.booking.seatNumber }}
     </p>

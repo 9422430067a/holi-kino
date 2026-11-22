@@ -1,10 +1,12 @@
 import {defineStore} from 'pinia'
 import {ApiError, PROBLEM_TITLES} from '@/api/client'
 import {bookSeat, reserveSeat} from '@/api/kinoApi'
-import type {Booking, BookSeatRequest, Reservation, SeatMap} from '@/api/types'
+import type {Booking, BookSeatRequest, Reservation, Screening, SeatMap} from '@/api/types'
+import {useScreeningStore} from "@/stores/screening.ts";
 
 const RESERVATION_KEY = 'holi-kino.reservation'
 const BOOKING_KEY = 'holi-kino.booking'
+const BOOKED_SCREENING_KEY = 'holi-kino.booked-screening'
 
 // The form data of a booking; the token comes from the current reservation.
 export type BookingFormValues = Omit<BookSeatRequest, 'reservationToken'>
@@ -57,6 +59,8 @@ export const useReservationStore = defineStore('reservation', {
       expired: false,
       // The last completed booking. Kept in sessionStorage: without e-mail it is the guest's only confirmation.
       booking: readStored<Booking>(BOOKING_KEY),
+      // A copy of the screening at the time of booking, like a receipt: independent of the server.
+      bookedScreening: readStored<Screening>(BOOKED_SCREENING_KEY),
     }
   },
 
@@ -91,7 +95,8 @@ export const useReservationStore = defineStore('reservation', {
       }
       try {
         const booking = await bookSeat({...form, reservationToken: reservation.reservationToken})
-        this.setBooking(booking)
+        const selected = useScreeningStore().selected
+        this.setBooking(booking, selected?.id === booking.screeningId ? selected : null)
         this.clear()
       } catch (error) {
         if (error instanceof ApiError && error.problem.title === PROBLEM_TITLES.reservationNotActive) {
@@ -139,9 +144,11 @@ export const useReservationStore = defineStore('reservation', {
       }
     },
 
-    setBooking(booking: Booking | null): void {
+    setBooking(booking: Booking | null, screening: Screening | null = null): void {
       this.booking = booking
+      this.bookedScreening = screening
       writeStored(BOOKING_KEY, booking)
+      writeStored(BOOKED_SCREENING_KEY, screening)
     },
   },
 })

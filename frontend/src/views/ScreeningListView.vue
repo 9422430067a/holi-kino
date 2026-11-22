@@ -4,10 +4,13 @@ import {RouterLink} from 'vue-router'
 import {fetchScreenings} from '@/api/kinoApi'
 import type {Screening} from '@/api/types'
 import {formatDay, formatTime} from '@/utils/format'
+import {useScreeningStore} from "@/stores/screening.ts";
 
 const screenings = ref<Screening[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
+
+const screeningStore = useScreeningStore()
 
 onMounted(async () => {
   try {
@@ -44,7 +47,10 @@ const days = computed(() => {
         <h2>{{ group.day }}</h2>
         <ul>
           <li v-for="screening in group.items" :key="screening.id">
-            <RouterLink :to="{ name: 'seatMap', params: { id: screening.id } }" class="screening">
+            <RouterLink :to="{ name: 'seatMap', params: { id: screening.id } }"
+                        class="screening"
+                        @click="screeningStore.select(screening)"
+            >
               <span class="time">{{ formatTime(screening.startsAt) }}</span>
               <span class="title">{{ screening.movieTitle }}</span>
               <span class="duration">{{ screening.durationMinutes }} Min.</span>

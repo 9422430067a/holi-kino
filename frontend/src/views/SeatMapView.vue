@@ -6,6 +6,8 @@ import type {Seat} from '@/api/types'
 import {useSeatMap} from '@/composables/useSeatMap'
 import {useReservationStore} from '@/stores/reservation'
 import ReservationCountdown from "@/components/ReservationCountdown.vue";
+import {useScreening} from "@/composables/useScreening.ts";
+import ScreeningInfo from "@/components/ScreeningInfo.vue";
 
 const props = defineProps<{ screeningId: number }>()
 const store = useReservationStore()
@@ -13,6 +15,8 @@ const {seatMap, loadError, reload} = useSeatMap(() => props.screeningId)
 
 const message = ref<string | null>(null)
 const busy = ref(false)
+
+const {screening} = useScreening(() => props.screeningId)
 
 const LOAD_ERROR_TEXT = {
   'not-bookable': 'Diese Vorstellung ist nicht mehr buchbar.',
@@ -81,6 +85,7 @@ watch(seatMap, (value) => {
   <main class="page">
     <RouterLink to="/">← Alle Vorstellungen</RouterLink>
     <h1>Platz wählen</h1>
+    <ScreeningInfo v-if="screening" :screening="screening"/>
 
     <p v-if="loadError" class="error" role="alert">{{ LOAD_ERROR_TEXT[loadError] }}</p>
     <p v-else-if="!seatMap">Sitzplan wird geladen …</p>
